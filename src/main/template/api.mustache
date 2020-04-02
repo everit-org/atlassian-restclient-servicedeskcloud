@@ -1,0 +1,119 @@
+{{!
+    Copyright © 2011 Everit Kft. (http://www.everit.org)
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+}}
+package {{package}};
+
+import java.util.Optional;
+
+{{^returnType}}
+import io.reactivex.Single;
+{{/returnType}}
+{{^returnType}}
+import io.reactivex.Completable;
+{{/returnType}}
+
+import org.everit.http.client.HttpMethod;
+
+import org.everit.http.restclient.RestClient;
+import org.everit.http.restclient.RestClientUtil;
+import org.everit.http.restclient.RestRequest;
+import org.everit.http.restclient.RestRequestEnhancer;
+import org.everit.http.restclient.TypeReference;
+
+{{#imports}}import {{import}};
+{{/imports}}
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+{{#operations}}
+public class {{classname}} {
+
+  private static final String DEFAULT_BASE_PATH = "{{{basePath}}}";
+{{#operation}}{{#returnType}}
+  private static final TypeReference<{{{returnType}}}> returnType_{{operationId}} = new TypeReference<{{{returnType}}}>() {};
+{{/returnType}}{{/operation}}
+  private final RestClient restClient;
+
+  public {{classname}}(RestClient restClient) {
+    this.restClient = restClient;
+  }
+
+  {{#operation}}
+  /**
+   * {{{summary}}}
+   * {{{notes}}}
+{{#allParams}}
+   * @param {{paramName}} {{{description}}}{{#required}} (required){{/required}}{{^required}} (optional{{#defaultValue}}, default to {{.}}{{/defaultValue}}){{/required}}
+{{/allParams}}
+   * @param restRequestEnhancer <p>Adds the possibility to modify the rest request before sending out. This can be useful to add authorizations tokens for example.</p>
+   * @return {{#returnType}}Single&lt;{{#isResponseFile}}org.everit.http.client.async.AsyncContentProvider{{/isResponseFile}}{{^isResponseFile}}{{returnType}}{{/isResponseFile}}&gt;{{/returnType}}{{^returnType}}Completable{{/returnType}}
+{{#isDeprecated}}
+   * @deprecated
+{{/isDeprecated}}
+{{#externalDocs}}
+   * {{{description}}}
+   * @see <a href="{{url}}">{{summary}} Documentation</a>
+{{/externalDocs}}
+   */
+  {{#isDeprecated}}
+  @Deprecated
+  {{/isDeprecated}}
+  public {{#returnType}}Single<{{#isResponseFile}}org.everit.http.client.async.AsyncContentProvider{{/isResponseFile}}{{^isResponseFile}}{{{returnType}}}{{/isResponseFile}}>{{/returnType}}{{^returnType}}Completable{{/returnType}} {{operationId}}({{^allParams}}{{#formParams}}{{#-first}}org.everit.http.client.async.AsyncContentProvider {{#isMultipart}}multipart{{/isMultipart}}{{^isMultipart}}formUrlencoded{{/isMultipart}}Body, {{/-first}}{{/formParams}}Optional<RestRequestEnhancer> restRequestEnhancer){{/allParams}}
+    {{#allParams}}{{#required}}{{{dataType}}}{{/required}}{{^required}}Optional<{{{dataType}}}>{{/required}} {{paramName}}, {{^hasMore}}Optional<RestRequestEnhancer> restRequestEnhancer){{/hasMore}}{{/allParams}} {
+
+    RestRequest.Builder requestBuilder = RestRequest.builder()
+        .method(HttpMethod.{{httpMethod}})
+        .basePath(DEFAULT_BASE_PATH)
+        .path("{{{path}}}");
+
+    Map<String, String> pathParams = new HashMap<>();
+    {{#pathParams}}
+{{^required}}    if ({{paramName}}.isPresent()) {
+  {{/required}}    pathParams.put("{{baseName}}", String.valueOf({{paramName}}{{^required}}.get(){{/required}}));{{^required}}
+    }{{/required}}
+    {{/pathParams}}
+    requestBuilder.pathParams(pathParams);
+
+    Map<String, Collection<String>> queryParams = new HashMap<>();
+    {{#queryParams}}
+{{^required}}    if ({{paramName}}.isPresent()) {
+  {{/required}}    queryParams.put("{{baseName}}", {{#collectionFormat}}RestClientUtil.objectCollectionToStringCollection({{paramName}}{{^required}}.get(){{/required}}){{/collectionFormat}}{{^collectionFormat}}Collections.singleton(String.valueOf({{paramName}}{{^required}}.get(){{/required}})){{/collectionFormat}});{{^required}}
+    }{{/required}}
+    {{/queryParams}}
+    requestBuilder.queryParams(queryParams);
+
+    Map<String, String> headers = new HashMap<>();
+    {{#headerParams}}
+{{^required}}    if ({{paramName}}.isPresent()) {
+  {{/required}}    headers.put("{{baseName}}", {{paramName}}{{^required}}.get(){{/required}});{{^required}}
+    }{{/required}}
+    {{/headerParams}}
+    requestBuilder.headers(headers);
+    {{#bodyParam}}
+
+    requestBuilder.requestBody({{#required}}Optional.of({{paramName}}){{/required}}{{^required}}{{paramName}}{{/required}});
+    {{/bodyParam}}
+
+    return restClient.callEndpoint(requestBuilder.build(), restRequestEnhancer{{#returnType}}, returnType_{{operationId}}{{/returnType}});
+  }
+
+  {{/operation}}
+}
+{{/operations}}
