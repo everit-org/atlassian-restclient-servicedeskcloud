@@ -28,7 +28,7 @@
 
   <groupId>org.everit.atlassian</groupId>
   <artifactId>org.everit.atlassian.restclient.servicedeskcloud</artifactId>
-  <version>1.0.0-202004021433-SNAPSHOT</version>
+  <version>1.0.0-202004021433</version>
   <packaging>bundle</packaging>
   <name>Everit - Atlassian Service Desk Cloud REST Client</name>
   <description>Service Desk REST Client generated with OpenAPITools that uses RXJava for asynchornous processing. Version in JSON: 1001.0.0</description>
