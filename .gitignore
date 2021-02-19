@@ -4,3 +4,5 @@
 /.openapi-generator/
 /.project
 /.settings/
+/.pmd
+/.pmdruleset.xml
