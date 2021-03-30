@@ -23,12 +23,12 @@
   <parent>
     <groupId>org.everit.config</groupId>
     <artifactId>org.everit.config.oss</artifactId>
-    <version>8.0.0</version>
+    <version>9.0.0</version>
   </parent>
 
   <groupId>org.everit.atlassian</groupId>
   <artifactId>org.everit.atlassian.restclient.servicedeskcloud</artifactId>
-  <version>1.0.1-202004021433</version>
+  <version>1.0.2-202004021433</version>
 
   <packaging>bundle</packaging>
 
@@ -92,6 +92,24 @@
             </Export-Package>
           </instructions>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.owasp</groupId>
+        <artifactId>dependency-check-maven</artifactId>
+        <version>6.1.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>aggregate</goal>
+            </goals>
+            <configuration>
+              <!-- high or above -->
+              <failBuildOnCVSS>7</failBuildOnCVSS>
+              <suppressionFile>${nvd.supprpression.file}</suppressionFile>
+              <skipProvidedScope>true</skipProvidedScope>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -256,34 +274,6 @@
           <type>pom</type>
         </dependency>
       </dependencies>
-    </profile>
-    <profile>
-      <id>ci</id>
-      <activation>
-        <property>
-          <name>env.CI</name>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.owasp</groupId>
-            <artifactId>dependency-check-maven</artifactId>
-            <version>5.3.0</version>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <configuration>
-                  <!-- high or above -->
-                  <failBuildOnCVSS>7</failBuildOnCVSS>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
     </profile>
   </profiles>
 </project>
